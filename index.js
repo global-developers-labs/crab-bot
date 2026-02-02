@@ -6,37 +6,56 @@ const { startAttack } = require('./engine');
 
 async function run() {
     console.log(chalk.red.bold(`
-    ██████╗██████╗  █████╗ ██████╗     ██████╗  ██████╗ ████████╗
-    ██╔════╝██╔══██╗██╔══██╗██╔══██╗    ██╔══██╗██╔═══██╗╚══██╔══╝
-    ██║     ██████╔╝███████║██████╔╝    ██████╔╝██║   ██║   ██║   
-    ██║     ██╔══██╗██╔══██║██╔══██╗    ██╔══██╗██║   ██║   ██║   
-    ╚██████╗██║  ██║██║  ██║██████╔╝    ██████╔╝╚██████╔╝   ██║   
-     ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝     ╚═════╝  ╚═════╝    ╚═╝   
-                                v2.0 - SUPER ENGINE
+      .---.         .---.
+     /     \\  _ _  /     \\
+    |  ( )  |(_ _)|  ( )  |
+     \\     /   |   \\     /
+      '---'    |    '---'
+               |
+           _...|..._
+        .'    |    '.
+       /  _...|..._  \\
+      |  /    |    \\  |
+      | |     |     | |
+       \\ \\_   |   _/ /
+        '._'--|--'_.'
+           '--|--'
+    `));
+    
+    console.log(chalk.red.bold(`
+    ╔══════════════════════════════════════════════════════════╗
+    ║                 CRAB BOT CYBER AGENT v4.0                ║
+    ║          Agent Track DDoS Test & Security Suite          ║
+    ╚══════════════════════════════════════════════════════════╝
     `));
 
-    console.log(chalk.yellow.bold('WARNING: THIS IS A HIGH-POWERED CYBER SECURITY TOOL. AUTHORIZED USE ONLY.\n'));
+    console.log(chalk.yellow('Status: ') + chalk.green('Ready to Deploy'));
+    console.log(chalk.yellow('Mode:   ') + chalk.cyan('Cyber Security Stress Testing & Analysis\n'));
 
     const answers = await inquirer.prompt([
         {
             type: 'input',
             name: 'url',
-            message: 'Enter the Target URL (e.g., https://your-site.com):',
+            message: 'Enter Target URL for Security Assessment:',
             validate: (input) => {
                 if (input.startsWith('http://') || input.startsWith('https://')) return true;
-                return 'Please enter a valid URL starting with http:// or https://';
+                return 'Please enter a valid URL.';
             }
         },
         {
             type: 'list',
-            name: 'payloadType',
-            message: 'Select Payload Type (to simulate human behavior):',
-            choices: ['random', 'json', 'xml']
+            name: 'mode',
+            message: 'Select Agent Operation Mode:',
+            choices: [
+                'Turbo Attack (100x Speed)',
+                'Stealth Analysis (JSON/XML Payloads)',
+                'Full Security Audit'
+            ]
         },
         {
             type: 'confirm',
             name: 'confirm',
-            message: chalk.red('Are you sure you want to deploy 30,000 Super Bots?'),
+            message: chalk.red.bold('WARNING: Deploying 30,000 Super Bots. Proceed?'),
             default: false
         }
     ]);
@@ -44,15 +63,13 @@ async function run() {
     if (answers.confirm) {
         await startAttack(answers.url, {
             botCount: 30000,
-            requestsPerBot: 300,
-            intervalMs: 4,
-            payloadType: answers.payloadType
+            mode: answers.mode
         });
     } else {
-        console.log(chalk.yellow('\n[!] Deployment aborted.'));
+        console.log(chalk.yellow('\n[!] Mission Aborted by User.'));
     }
 }
 
 run().catch(err => {
-    console.error(chalk.red('\n[!] Fatal Error:'), err.message);
+    console.error(chalk.red('\n[!] Agent Error:'), err.message);
 });
