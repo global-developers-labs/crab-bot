@@ -5,41 +5,50 @@ const chalk = require('chalk');
 const { startAttack } = require('./engine');
 
 async function run() {
+    // Cute ASCII Crab
+    console.log(chalk.red.bold(`
+       __      __
+      (  \\____/  )
+       \\  o  o  /    <-- Hello! I'm your Cute Cyber Crab!
+        (_  v  _)
+       /        \\
+      /          \\
+     (  /      \\  )
+      \\_\\      /_/
+    `));
+    
     console.log(chalk.magenta.bold(`
-    ██████╗██████╗  █████╗ ██████╗ ██████╗  ██████╗ ████████╗
-    ██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔═══██╗╚══██╔══╝
-    ██║     ██████╔╝███████║██████╔╝██████╔╝██║   ██║   ██║   
-    ██║     ██╔══██╗██╔══██║██╔══██╗██╔══██╗██║   ██║   ██║   
-    ╚██████╗██║  ██║██║  ██║██████╔╝██████╔╝╚██████╔╝   ██║   
-     ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚═════╝  ╚═════╝    ╚═╝   
-    [ CRABBOT AI AGENT v6.0 - THE ULTIMATE SWARM ]
+    ╔══════════════════════════════════════════════════════════╗
+    ║             CUTE CRAB BOT AI AGENT v6.1                  ║
+    ║        "Small but Mighty" Cyber Security Swarm           ║
+    ╚══════════════════════════════════════════════════════════╝
     `));
 
-    console.log(chalk.cyan('Welcome, Commander. I am your Cyber AI Agent.'));
-    console.log(chalk.dim('Inspired by MoltBot & CloudBot | Powered by CrabBot Swarm Engine\n'));
+    console.log(chalk.yellow('Status: ') + chalk.green('Happy & Ready! 🦀✨'));
+    console.log(chalk.cyan('Mission: ') + chalk.white('Making the web safer, one pinch at a time.\n'));
 
     const answers = await inquirer.prompt([
         {
             type: 'list',
             name: 'action',
-            message: 'What is our mission today?',
+            message: 'What should we do today, Commander?',
             choices: [
-                { name: '🚀 Launch Autonomous Swarm Attack', value: 'attack' },
-                { name: '🔍 Perform AI File Intelligence (CloudBot Style)', value: 'analyze' },
-                { name: '🛡 Full System Security Audit', value: 'audit' }
+                { name: '🚀 Launch Friendly Swarm Attack', value: 'attack' },
+                { name: '🔍 Smart File Audit (CloudBot Style)', value: 'analyze' },
+                { name: '🛡 Full Security Checkup', value: 'audit' }
             ]
         },
         {
             type: 'input',
             name: 'url',
-            message: 'Enter Target URL:',
+            message: 'Enter the URL we should check:',
             when: (a) => a.action !== 'analyze'
         },
         {
             type: 'confirm',
             name: 'confirm',
-            message: chalk.red.bold('Deploying Multi-Agent Swarm. Are you ready?'),
-            default: false
+            message: chalk.magenta('Ready to deploy the cute but powerful swarm?'),
+            default: true
         }
     ]);
 
@@ -51,14 +60,12 @@ async function run() {
         
         const results = await startAttack(answers.url || 'http://localhost', options);
         
-        console.log(chalk.green.bold(`\n[✓] Mission Accomplished.`));
-        console.log(chalk.white(`Total Hits: ${results.stats.success.toLocaleString()}`));
-        console.log(chalk.red(`Total Blocked: ${results.stats.blocked.toLocaleString()}`));
+        console.log(chalk.green.bold(`\n[✓] Mission Accomplished! The web is a bit safer now. 🦀💖`));
     } else {
-        console.log(chalk.yellow('\n[!] Mission Aborted. Standing by.'));
+        console.log(chalk.yellow('\n[!] Okay, I\'ll stay here and keep an eye on things!'));
     }
 }
 
 run().catch(err => {
-    console.error(chalk.red('\n[!] Agent Critical Failure:'), err.message);
+    console.error(chalk.red('\n[!] Oops! Something went wrong:'), err.message);
 });
